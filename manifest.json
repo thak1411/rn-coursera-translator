@@ -1,0 +1,16 @@
+  {
+    "name": "RN COURSERA TRANSLATOR",
+    "version": "0.1",
+    "description": "coursera translator By Rn",
+    "browser_action": {
+        "default_popup": "view/popup.html"
+    },
+    "content_scripts": [{
+        "all_frames": true,
+        "js": [ "/src/script.js" ],
+        "matches": [ "https://www.coursera.org/*" ],
+        "run_at": "document_start"
+    }],
+    "web_accessible_resources" : ["/src/content.js"],
+    "manifest_version": 2
+}
