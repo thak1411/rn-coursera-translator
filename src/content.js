@@ -1,25 +1,20 @@
 var rnTrans = function() {
     var video = document.querySelector('video');
-    var texts = document.querySelectorAll('#rn-trans font font');
+    var vscript = document.querySelectorAll('.rc-Transcript .rc-Paragraph .phrases div[role=button]');
     var spt = ['WEBVTT'];
-    for (var i = 0; i < texts.length; ++i) {
-        if (isNaN(texts[i].textContent.split(' ')[0])) {
-            spt[spt.length - 1] += '\n' + texts[i].textContent;
-        } else {
-            sp = texts[i].textContent.replace(/\ :\ /g, ':').split(' ');
-            ps = ''
-            for (var j = 4; j < sp.length; ++j) {
-                ps += sp[j] + ' ';
-            }
-            txt = sp[0] + '\n' + sp[1] + ' --> ' + sp[3] + '\n' + ps;
-            spt.push(txt);
-        }
+    
+    for (var i = 0; i < vscript.length; ++i) {
+        var value = vscript[i].textContent;
+        var vs = window.rnvtt[i].split(/[\n\ ]+/);
+        spt.push(vs[0] + '\n' + vs[1] + ' --> ' + vs[3] + '\n' + value);
     }
-    console.log(spt.join('\n\n'));
+    // console.log(spt.join('\n\n'));
     addTrack(video, 'data:text/vtt;base64,' + Base64.encode(spt.join('\n\n')));
 }
 
 var addTrack = function(video, trackData) {
+    var pvTrack = document.querySelector('track[label=영어싫어]');
+    if (pvTrack) pvTrack.remove();
     var track = document.createElement('track');
     track.src = trackData;
     track.srclang = 'ko';
@@ -41,15 +36,9 @@ var getTrack = function() {
         fetch(track.src)
         .then(res => res.text())
         .then(vtt => {
-            var spt = vtt.slice(8).split('\n\n');
-            document.getElementById('rn-trans').innerHTML = '';
-            for (var i = 0; i < spt.length; ++i) {
-                var line = document.createElement('span');
-                line.innerHTML = spt[i];
-                document.getElementById('rn-trans').appendChild(line);
-            }
+            window.rnvtt = vtt.slice(8).split('\n\n');
         });
-    } else alert('no track for translator');
+    } else console.log('no track for translator');
 };
 
 var main = function() {
@@ -62,12 +51,17 @@ sc.src = 'https://cdn.jsdelivr.net/npm/js-base64@3.6.1/base64.min.js';
 document.body.appendChild(sc);
 
 setTimeout(() => {
-    var tbox = document.createElement('div');
-    tbox.id = 'rn-trans';
-    tbox.style.fontSize = '1px';
-    tbox.style.zIndex = -1;
-    document.body.appendChild(tbox);
+    var itarget = document.querySelector('.rc-VideoTranscriptToolbar > div');
+    var rnTransBtn = document.createElement('button');
+    rnTransBtn.id = 'rn-trans';
+    rnTransBtn.onclick = rnTrans;
+    rnTransBtn.innerHTML = '번역좀요 ㅋㅋ';
+    rnTransBtn.style.width = '100px';
+    rnTransBtn.style.textAlign = 'center';
+    rnTransBtn.classList.add('_xcrq5m');
+    rnTransBtn.classList.add('_r3zeoj');
+    itarget.appendChild(rnTransBtn);
 
     console.log('run!');
     main();
-}, 5000);
+}, 6000);
